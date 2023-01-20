@@ -216,10 +216,9 @@ bool PositionControl::_inputValid()
 		valid = valid && (PX4_ISFINITE(_pos_sp(i)) || PX4_ISFINITE(_vel_sp(i)) || PX4_ISFINITE(_acc_sp(i)));
 	}
 
-	// x and y input setpoints always have to come in pairs
-	valid = valid && (PX4_ISFINITE(_pos_sp(0)) == PX4_ISFINITE(_pos_sp(1)));
-	valid = valid && (PX4_ISFINITE(_vel_sp(0)) == PX4_ISFINITE(_vel_sp(1)));
-	valid = valid && (PX4_ISFINITE(_acc_sp(0)) == PX4_ISFINITE(_acc_sp(1)));
+	/*valid = valid && (PX4_ISFINITE(_pos_sp(0)) && PX4_ISFINITE(_pos_sp(1)));
+	valid = valid && (PX4_ISFINITE(_vel_sp(0)) && PX4_ISFINITE(_vel_sp(1)));
+	valid = valid && (PX4_ISFINITE(_acc_sp(0)) && PX4_ISFINITE(_acc_sp(1)));*/
 
 	// For each controlled state the estimate has to be valid
 	for (int i = 0; i <= 2; i++) {

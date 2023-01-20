@@ -245,14 +245,17 @@ PositionControlStates MulticopterPositionControl::set_vehicle_states(const vehic
 {
 	PositionControlStates states;
 
-	// only set position states if valid and finite
-	if (PX4_ISFINITE(vehicle_local_position.x) && PX4_ISFINITE(vehicle_local_position.y)
-	    && vehicle_local_position.xy_valid) {
+	// Check X Position
+	if (PX4_ISFINITE(vehicle_local_position.x) && vehicle_local_position.xy_valid) {
 		states.position(0) = vehicle_local_position.x;
-		states.position(1) = vehicle_local_position.y;
-
 	} else {
 		states.position(0) = NAN;
+	}
+
+	// Check Y Position
+	if (PX4_ISFINITE(vehicle_local_position.y) && vehicle_local_position.xy_valid) {
+		states.position(1) = vehicle_local_position.y;
+	} else {
 		states.position(1) = NAN;
 	}
 
@@ -263,21 +266,29 @@ PositionControlStates MulticopterPositionControl::set_vehicle_states(const vehic
 		states.position(2) = NAN;
 	}
 
-	if (PX4_ISFINITE(vehicle_local_position.vx) && PX4_ISFINITE(vehicle_local_position.vy)
-	    && vehicle_local_position.v_xy_valid) {
+	// Check X Velocity
+	if (PX4_ISFINITE(vehicle_local_position.vx) && vehicle_local_position.v_xy_valid) {
 		states.velocity(0) = vehicle_local_position.vx;
-		states.velocity(1) = vehicle_local_position.vy;
 		states.acceleration(0) = _vel_x_deriv.update(vehicle_local_position.vx);
-		states.acceleration(1) = _vel_y_deriv.update(vehicle_local_position.vy);
 
 	} else {
 		states.velocity(0) = NAN;
-		states.velocity(1) = NAN;
 		states.acceleration(0) = NAN;
-		states.acceleration(1) = NAN;
 
 		// reset derivatives to prevent acceleration spikes when regaining velocity
 		_vel_x_deriv.reset();
+	}
+
+	// Check Y velocity
+	if (PX4_ISFINITE(vehicle_local_position.vy) && vehicle_local_position.v_xy_valid) {
+		states.velocity(1) = vehicle_local_position.vy;
+		states.acceleration(1) = _vel_y_deriv.update(vehicle_local_position.vy);
+
+	} else {
+		states.velocity(1) = NAN;
+		states.acceleration(1) = NAN;
+
+		// reset derivatives to prevent acceleration spikes when regaining velocity
 		_vel_y_deriv.reset();
 	}
 
